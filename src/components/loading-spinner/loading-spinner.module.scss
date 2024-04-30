@@ -1,0 +1,36 @@
+.spinner {
+  font-size: 32px;
+  position: relative;
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+
+  .spinner-blade {
+    position: absolute;
+    left: 0.4629em;
+    bottom: 0;
+    width: 0.074em;
+    height: 0.2777em;
+    border-radius: 0.5em;
+    background-color: transparent;
+    transform-origin: center -0.2222em;
+    animation: spinner-fade 1.4s infinite linear;
+
+    @for $i from 1 through 12 {
+      &:nth-child(#{$i}) {
+        animation-delay: ($i - 1) * 0.083s;
+        transform: rotate(($i - 1) * 30deg);
+      }
+    }
+  }
+}
+
+@keyframes spinner-fade {
+  0%,
+  100% {
+    background-color: #fff;
+  }
+  60% {
+    background-color: #eeeeee20;
+  }
+}

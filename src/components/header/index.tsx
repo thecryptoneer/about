@@ -1,0 +1,72 @@
+import { cn } from "@/lib/utils";
+import Clock from "@/components/clock";
+import { useStore, useWindowStore } from "@/store";
+import Image from "next/image";
+import { leftItems, rightItems } from "@/components/header/items";
+import { IStep } from "@/interfaces";
+
+export interface HeaderProps {
+  background?: boolean;
+  step?: IStep;
+}
+
+export default function Header({ background }: HeaderProps) {
+  // const connectionSpeed = useStore(state => state.connectionSpeed);
+  const step = useStore((state) => state.step);
+  const focusedWindow = useWindowStore((state) => state.focusedWindow);
+  const isVisible = (values: string[]): boolean => values.includes(step.value);
+
+  return (
+    <div
+      className={cn(
+        "flex flex-row justify-between items-start py-1 px-6 h-[26px]",
+        background ? "bg-zinc-800/70" : "",
+      )}
+    >
+      <div
+        className={
+          "flex flex-row justify-start items-center gap-6 cursor-default"
+        }
+      >
+        {isVisible(["success"]) && (
+          <>
+            <Image
+              className={"translate-y-[-2px]"}
+              src={"/assets/apple_logo_black.svg"}
+              width={13}
+              height={13}
+              alt={"logo"}
+            />
+            <p className={cn("text-[13px]")}>
+              {focusedWindow?.title ?? "Finder"}
+            </p>
+            {leftItems.map((item, index) => (
+              <p key={item} className={cn("text-[13px]")}>
+                {item}
+              </p>
+            ))}
+          </>
+        )}
+      </div>
+
+      <div></div>
+
+      <div className={cn("flex gap-4 items-center")}>
+        {isVisible(["success"]) && (
+          <div className={cn("flex gap-5 items-center")}>
+            {rightItems.map((item, index) => (
+              <div
+                key={item.id}
+                className={cn("object-fit min-w-[16px] items-center")}
+              >
+                {item.icon}
+              </div>
+            ))}
+            {/*<p className={cn('text-[13px]')}>{connectionSpeed}</p>*/}
+            <Clock variant={"header"} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

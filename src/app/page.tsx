@@ -1,113 +1,128 @@
-import Image from "next/image";
+"use client";
+import { useEffect, useState } from "react";
+import Logo from "@/components/logo";
+import LoadingBar from "@/components/loading-bar";
+import { cn } from "@/lib/utils";
+import Header from "@/components/header";
+import Clock from "@/components/clock";
+import LoginAccount from "@/components/login-account";
+import { useDesktopStore, useStore, useWindowStore } from "@/store";
+import { wait } from "@/lib/utils";
+import Dock from "@/components/dock";
+import MacWindow from "@/components/mac-window";
+import DesktopItem from "../components/desktop-item";
+import { IDesktopItem, IMacWindow, IStep } from "@/interfaces";
 
 export default function Home() {
+  const steps: IStep[] = [
+    { value: "idle", label: "Idle", duration: 1000 },
+    { value: "loading", label: "Loading", duration: 1500 },
+    { value: "login", label: "Login", duration: -1 },
+  ];
+  const step = useStore((state) => state.step);
+  const setStep = useStore((state) => state.setStep);
+  const [progress, setProgress] = useState<number>(0);
+
+  const windows: IMacWindow[] = useWindowStore((state) => state.windows);
+  const setScreenSize = useWindowStore((state) => state.setScreenSize);
+
+  const desktopItems: IDesktopItem[] = useDesktopStore(
+    (state) => state.desktopItems,
+  );
+
+  const runSequence = async () => {
+    for (const currentStep of steps) {
+      setStep(currentStep);
+      await wait(currentStep.duration);
+    }
+  };
+
+  // update screen size on resize
+  useEffect(() => {
+    const handleResize = () =>
+      setScreenSize(window.innerWidth, window.innerHeight);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    setScreenSize(window?.innerWidth, window.innerHeight);
+    runSequence();
+  }, []);
+
+  useEffect(() => {
+    if (step.value !== "loading") {
+      setProgress(0); // Reset progress when not loading
+      return;
+    }
+    const startTime = Date.now();
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const progress = (elapsed / step.duration) * 100;
+      if (progress >= 100) {
+        clearInterval(interval);
+        setProgress(100);
+      } else {
+        setProgress(progress);
+      }
+    }, 50); // Update progress every 50ms
+    return () => clearInterval(interval);
+  }, [step]);
+
+  const isVisible = (values: string[]) => values.includes(step.value);
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <main
+      className={cn(
+        "flex min-h-screen flex-col",
+        isVisible(["login", "success", "loggingIn"])
+          ? "bg-background bg-no-repeat bg-cover"
+          : "",
+      )}
+    >
+      {/* header */}
+      {isVisible(["login", "success"]) && (
+        <Header background={isVisible(["success"])} />
+      )}
+
+      {/* idle / loading screen */}
+      {isVisible(["idle", "loading"]) && (
+        <div
+          className={cn(
+            "w-full flex flex-col justify-center items-center h-screen",
+          )}
+        >
+          <Logo width={70} />
+          <LoadingBar hidden={!isVisible(["loading"])} progress={progress} />
         </div>
-      </div>
+      )}
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
+      {/* login screen */}
+      {isVisible(["login", "loggingIn"]) && (
+        <div
+          className={cn(
+            "flex flex-col justify-between items-center h-screenWithoutHeader pt-16 pb-32",
+          )}
         >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+          <Clock variant={"login"} />
+          <LoginAccount />
+        </div>
+      )}
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+      {/* windows and desktop-item */}
+      {isVisible(["success"]) && (
+        <div className={cn("relative h-screenWithoutHeader")}>
+          {windows
+            ?.filter((w) => !w.isMinimized)
+            ?.map((window) => <MacWindow key={window.id} window={window} />)}
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
+          {desktopItems.map((item, index) => (
+            <DesktopItem key={item.id} item={item} />
+          ))}
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+          <Dock />
+        </div>
+      )}
     </main>
   );
 }
