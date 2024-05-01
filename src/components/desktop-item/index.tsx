@@ -1,7 +1,7 @@
 import { useDesktopStore, useWindowStore } from "@/store";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { FolderIcon } from "@/components/icons";
+import {FolderIcon, TextIcon} from "@/components/icons";
 import { ICorner, IDelta, IDesktopItem, IMacWindow } from "@/interfaces";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 import useDoubleClick from "@/hooks/useDoubleClick";
@@ -167,9 +167,9 @@ export default function DesktopItem({ item: desktopItem }: DesktopItemProps) {
     console.log("Double click");
     const new_window: IMacWindow = {
       position: { x: windows.length * 50, y: windows.length * 50 },
-      size: { width: 400, height: 400 },
+      size: { width: 800, height: 600 },
       title: desktopItem.name,
-      id: desktopItem.name,
+      id: desktopItem.id,
       isMaximized: false,
       isMinimized: false,
     };
@@ -204,7 +204,7 @@ export default function DesktopItem({ item: desktopItem }: DesktopItemProps) {
   return (
     <button
       ref={ref}
-      className={cn("absolute", isFocused ? "z-50" : "z-40")}
+      className={cn("absolute", isFocused ? "z-40" : "z-30")}
       style={{
         top: itemTop,
         left: itemLeft,
@@ -223,7 +223,8 @@ export default function DesktopItem({ item: desktopItem }: DesktopItemProps) {
               : "",
           )}
         >
-          <FolderIcon />
+          {desktopItem.id === 'cv' ? (<TextIcon />) : (<FolderIcon />)}
+
         </div>
         <p
           className={cn(

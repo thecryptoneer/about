@@ -5,6 +5,7 @@ const config: Config = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/**/*.{ts,tsx}",
   ],
   theme: {
     extend: {
@@ -14,6 +15,11 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
         folder: "url('/assets/images/folder_main.png')",
+        folderCode: "url('/assets/folder-code-icon.png')",
+        folderCode2: "url('/assets/folder-code2-icon.png')",
+        folderGitHub: "url('/assets/folder-github-icon.png')",
+        folderImage: "url('/assets/folder-image-icon.png')",
+        textIcon: "url('/assets/text-icon.png')",
       },
       fontFamily: {
         apple: ['"San Francisco"', "ui-sans-serif", "system-ui"],

@@ -39,8 +39,6 @@ export interface WindowStoreActions {
   closeWindow: (window: IMacWindow) => void;
   focusWindow: (window: IMacWindow) => void;
   dragWindow: (window: IMacWindow) => void;
-  maximizeWindow: (window: IMacWindow) => void;
-  minimizeWindow: (window: IMacWindow) => void;
   updateWindow: (window: IMacWindow) => void;
 }
 
@@ -91,31 +89,7 @@ export const useWindowStore = create<WindowStoreState & WindowStoreActions>(
           newWindows[index] = window;
           return { windows: newWindows };
         }),
-      maximizeWindow: (window: IMacWindow) =>
-        set((state) => {
-          const index: number = state.windows.findIndex(
-            (w) => w.id === window.id,
-          );
-          if (index === -1) {
-            return state;
-          }
-          const newWindows: IMacWindow[] = [...state.windows];
-          newWindows[index] = window;
-          return { windows: newWindows };
-        }),
       updateWindow: (window: IMacWindow) =>
-        set((state) => {
-          const index: number = state.windows.findIndex(
-            (w) => w.id === window.id,
-          );
-          if (index === -1) {
-            return state;
-          }
-          const newWindows: IMacWindow[] = [...state.windows];
-          newWindows[index] = window;
-          return { windows: newWindows };
-        }),
-      minimizeWindow: (window) =>
         set((state) => {
           const index: number = state.windows.findIndex(
             (w) => w.id === window.id,
@@ -148,14 +122,16 @@ export const useDesktopStore = create<DesktopStoreState & DesktopStoreActions>(
         {
           position: { x: 100, y: 100 },
           size: { width: 80, height: 80 },
-          name: "Projects",
-          id: "folder-1",
+          name: "CV",
+          image: '/assets/text-icon.png',
+          id: "cv",
         },
         {
           position: { x: 100, y: 200 },
           size: { width: 80, height: 80 },
           name: "Skills",
-          id: "folder-2",
+          image: '/assets/filter-code2.png',
+          id: "skills",
         },
       ],
       setDesktopItems: (desktopItems: IDesktopItem[]) => set({ desktopItems }),

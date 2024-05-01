@@ -139,8 +139,20 @@ export function FolderIcon() {
   return (
     <div
       className={cn(
-        "w-[72px] h-[72px] bg-folder bg-center bg-no-repeat bg-contain",
+        "w-[72px] h-[72px] bg-folderCode2 bg-center bg-no-repeat bg-contain",
       )}
     ></div>
   );
 }
+
+export function TextIcon() {
+  return (
+    <div
+      className={cn(
+        "w-[72px] h-[72px] bg-textIcon bg-center bg-no-repeat bg-contain",
+      )}
+    ></div>
+  );
+}
+
+

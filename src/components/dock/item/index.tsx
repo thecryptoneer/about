@@ -83,7 +83,7 @@ export default function DockItem({ item, mousePosition }: DockItemProps) {
       setClicked(true);
       openWindow({
         position: { x: windows.length * 50, y: windows.length * 50 },
-        size: { width: 400, height: 400 },
+        size: { width: 800, height: 600 },
         title: name ?? "",
         id: name ?? "",
         isMaximized: false,

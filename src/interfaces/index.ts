@@ -40,6 +40,13 @@ export interface IDelta {
   left: number;
 }
 
+export interface IDimension {
+  width: number;
+  height: number;
+  top: number;
+  left: number;
+}
+
 export interface IDockItemDimension {
   height: number;
   width: number;
