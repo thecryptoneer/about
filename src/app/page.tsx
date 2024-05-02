@@ -71,10 +71,6 @@ export default function Home() {
     return isTablet || isMobile;
   };
 
-  if (isTouchDevice()) {
-    return <div>mobile</div>;
-  }
-
   return (
     <main
       className={cn(
