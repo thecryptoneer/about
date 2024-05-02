@@ -12,7 +12,7 @@ export const wait = (ms: number) =>
 export const throttle: any = (func: any, limit: number): any => {
   let lastFunc: any;
   let lastRan: any;
-  let _this: any = this;
+  const _this: any = this;
   return function () {
     const context: any = _this;
     const args: any = arguments;

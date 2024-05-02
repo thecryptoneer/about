@@ -5,12 +5,12 @@ export const debounce = (func: any, wait: number, immediate?: boolean) => {
     // @ts-ignore
     const context: any = this;
 
-    let later = () => {
+    const later = () => {
       timeout = null;
       if (!immediate) func.apply(context, args);
     };
 
-    let callNow = immediate && !timeout;
+    const callNow = immediate && !timeout;
 
     clearTimeout(timeout);
 

@@ -110,7 +110,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       // if no token is returned, user must sign message
       if (response?.result?.message && response?.result?.messageId) {
         const { message, messageId } = response.result;
-        let { token: _token, error: signError } = await signAuthMessage(
+        const { token: _token, error: signError } = await signAuthMessage(
           message,
           messageId,
         );

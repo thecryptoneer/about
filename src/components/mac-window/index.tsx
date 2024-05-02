@@ -48,7 +48,7 @@ export default function MacWindow({ window: macWindow }: MacWindowProps) {
   });
 
   const windowDimension: IDimension = useMemo(() => {
-    let dimension: IDimension = { width: 0, height: 0, top: 0, left: 0 };
+    const dimension: IDimension = { width: 0, height: 0, top: 0, left: 0 };
     // width
     if (delta.left) {
       dimension.width = corners.right - corners.left - delta.left;

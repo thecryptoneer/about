@@ -6,11 +6,6 @@ import { isValidAddress } from "@ethereumjs/util";
 import jwt from "jsonwebtoken";
 import { APIResponse } from "@/interfaces";
 
-const client = await clientPromise;
-const db = client.db("tax3000");
-const dbMessages = db.collection("messages");
-const dbUsers = db.collection("users");
-
 export async function GET(request: NextRequest) {
   const responseData: APIResponse = {
     endpoint: "GET /api/auth/message/request",
@@ -41,6 +36,10 @@ export async function GET(request: NextRequest) {
     });
   }
 
+  const client = await clientPromise;
+  const db = client.db("tax3000");
+  const dbMessages = db.collection("messages");
+  const dbUsers = db.collection("users");
   // check if user exists for address
   const user = await dbUsers.findOne({ address: address });
 

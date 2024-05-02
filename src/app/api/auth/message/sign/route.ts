@@ -7,11 +7,6 @@ import jwt from "jsonwebtoken";
 import { APIResponse } from "@/interfaces";
 import { baseHeaders } from "../../../../../../config/api";
 
-const client = await clientPromise;
-const db = client.db("tax3000");
-const dbMessages = db.collection("messages");
-const dbUsers = db.collection("users");
-
 export async function POST(request: NextRequest) {
   const body = await request.json();
   let { signature, messageId } = body;
@@ -44,6 +39,11 @@ export async function POST(request: NextRequest) {
       headers: { "Content-Type": "application/json" },
     });
   }
+
+  const client = await clientPromise;
+  const db = client.db("tax3000");
+  const dbMessages = db.collection("messages");
+  const dbUsers = db.collection("users");
 
   // check if user exists for address
   const user = await dbUsers.findOne({ address: address });
