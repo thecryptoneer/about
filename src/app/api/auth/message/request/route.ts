@@ -59,6 +59,7 @@ export async function GET(request: NextRequest) {
       "new-user",
       timestamp,
       userId,
+      dbMessages,
     );
     if (error) {
       responseData.error = error;
@@ -109,6 +110,7 @@ export async function GET(request: NextRequest) {
       "login-user",
       timestamp,
       user._id,
+      dbMessages,
     );
     if (error) {
       responseData.error = error;
@@ -154,6 +156,7 @@ async function createMessage(
   action,
   timestamp,
   userId,
+  dbMessages,
   visibleToUser?,
 ): Promise<{
   message?: string;
@@ -166,7 +169,7 @@ async function createMessage(
   }
   visibleToUser = visibleToUser.replace(new RegExp(separator, "g"), ""); // replace all separators from visibleToUser
   visibleToUser.indexOf(separator) > -1 &&
-    console.log("Error: separator found in visibleToUser");
+  console.log("Error: separator found in visibleToUser");
   if (!action) {
     action = "register_wallet";
   }
