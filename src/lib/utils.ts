@@ -1,5 +1,6 @@
 import { twMerge } from "tailwind-merge";
 import { type ClassValue, clsx } from "clsx";
+import { verifyMessage } from "@ethersproject/wallet";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -31,4 +32,19 @@ export const throttle: any = (func: any, limit: number): any => {
       );
     }
   };
+};
+
+export const safeVerifyMessage = (address, message, signature) => {
+  try {
+    // console.log({'safeVerifyMessage':  address, message, signature})
+    const signerAddress = verifyMessage(message, signature);
+    // console.log({signerAddress})
+    if (signerAddress.toLowerCase() === address?.toLowerCase()) {
+      return true;
+    }
+    return false;
+  } catch (e: any) {
+    // console.log("Error verifying signature:", e.message);
+    return false;
+  }
 };

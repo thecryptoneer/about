@@ -3,7 +3,7 @@
 /* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #4f4a43 rgba(63, 55, 55, 0.5)
+  scrollbar-color: #4f4a43 rgba(63, 55, 55, 0.5);
 }
 
 /* Chrome, Edge, and Safari */
@@ -20,6 +20,14 @@
   background-color: rgba(63, 55, 55, 0.5);
   border-radius: 14px;
   border: 3px solid #4f4a43;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 @tailwind components;

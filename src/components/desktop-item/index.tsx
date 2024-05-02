@@ -1,10 +1,16 @@
-import { useDesktopStore, useWindowStore } from "@/store";
+import { useMacWindowStore, WindowStore } from "@/store/mac-window-store";
+import {
+  DesktopStore,
+  DesktopStoreState,
+  useDesktopStore,
+} from "@/store/desktop-store";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import {FolderIcon, TextIcon} from "@/components/icons";
+import { FolderIcon, TextIcon } from "@/components/icons";
 import { ICorner, IDelta, IDesktopItem, IMacWindow } from "@/interfaces";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 import useDoubleClick from "@/hooks/useDoubleClick";
+import { useWindowSize } from "usehooks-ts";
 
 export interface DesktopItemProps {
   item: IDesktopItem;
@@ -19,14 +25,25 @@ export default function DesktopItem({ item: desktopItem }: DesktopItemProps) {
     y: 0,
   });
 
-  const screenWidth = useWindowStore((state) => state.screenWidth);
-  const screenHeight = useWindowStore((state) => state.screenHeight);
-  const updateDesktopItem = useDesktopStore((state) => state.updateDesktopItem);
-  const desktopItems = useDesktopStore((state) => state.desktopItems);
-  const openWindow = useWindowStore((state) => state.openWindow);
-  const updateWindow = useWindowStore((state) => state.updateWindow);
-  const focusWindow = useWindowStore((state) => state.focusWindow);
-  const windows = useWindowStore((state) => state.windows);
+  const screenWidth = useMacWindowStore(
+    (state: WindowStore) => state.screenWidth,
+  );
+  const screenHeight = useMacWindowStore(
+    (state: WindowStore) => state.screenHeight,
+  );
+  const openWindow = useMacWindowStore(
+    (state: WindowStore) => state.openWindow,
+  );
+  const updateWindow = useMacWindowStore(
+    (state: WindowStore) => state.updateWindow,
+  );
+  const focusWindow = useMacWindowStore(
+    (state: WindowStore) => state.focusWindow,
+  );
+  const windows = useMacWindowStore((state: WindowStore) => state.windows);
+  const desktopItems = useDesktopStore(
+    (state: DesktopStore) => state.desktopItems,
+  );
 
   const [corners, setCorners] = useState<ICorner>({
     top: desktopItem.position.y,
@@ -143,7 +160,7 @@ export default function DesktopItem({ item: desktopItem }: DesktopItemProps) {
 
   const handleMouseUp = (): void => {
     setIsDragging(false);
-    updateDesktopItem({
+    useDesktopStore?.getState()?.updateDesktopItem({
       ...desktopItem,
       position: {
         x: itemLeft,
@@ -158,16 +175,16 @@ export default function DesktopItem({ item: desktopItem }: DesktopItemProps) {
 
   useDoubleClick({
     ref: ref,
-    latency: 180,
-    onSingleClick: () => console.log("Single click"),
+    latency: 250,
+    onSingleClick: () => null,
     onDoubleClick: () => handleDoubleClick(),
   });
+  const size = useWindowSize();
 
   const handleDoubleClick = () => {
-    console.log("Double click");
     const new_window: IMacWindow = {
       position: { x: windows.length * 50, y: windows.length * 50 },
-      size: { width: 800, height: 600 },
+      size: { width: size.width * 0.6, height: size.height * 0.5 },
       title: desktopItem.name,
       id: desktopItem.id,
       isMaximized: false,
@@ -223,8 +240,7 @@ export default function DesktopItem({ item: desktopItem }: DesktopItemProps) {
               : "",
           )}
         >
-          {desktopItem.id === 'cv' ? (<TextIcon />) : (<FolderIcon />)}
-
+          {desktopItem.id === "cv" ? <TextIcon /> : <FolderIcon />}
         </div>
         <p
           className={cn(

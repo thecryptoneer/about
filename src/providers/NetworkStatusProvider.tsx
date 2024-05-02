@@ -20,7 +20,12 @@ export const NetworkStatusContext = createContext({
   testNetwork: () => {},
 });
 
-export const NetworkStatusProvider = ({ children }: any) => {
+interface NetworkStatusProviderProps {
+  children: React.ReactNode;
+}
+export const NetworkStatusProvider = ({
+  children,
+}: NetworkStatusProviderProps) => {
   const imageUrl: string = networkTestImageUrl;
   const downloadSize: number = networkTestImageSize;
   const pingInterval: number = networkTestInterval

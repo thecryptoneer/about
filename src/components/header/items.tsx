@@ -1,8 +1,6 @@
 import {
-  BatteryIcon,
   ControlIcon,
   GitHubIcon,
-  SearchIcon,
   SiriIcon,
   VolIcon,
   WifiIcon,
@@ -39,21 +37,21 @@ export const rightItems: IHeaderIconItem[] = [
     icon: <VolIcon />,
     id: "vol",
   },
-  {
-    className: "",
-    id: "battery",
-    icon: <BatteryIcon />,
-  },
+  // {
+  //   className: "",
+  //   id: "battery",
+  //   icon: <BatteryIcon />,
+  // },
   {
     className: "wifi",
     icon: <WifiIcon />,
     id: "wifi",
   },
-  {
-    className: "search",
-    icon: <SearchIcon />,
-    id: "search",
-  },
+  // {
+  //   className: "search",
+  //   icon: <SearchIcon />,
+  //   id: "search",
+  // },
   {
     className: "",
     id: "control",

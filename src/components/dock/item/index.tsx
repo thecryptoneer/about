@@ -2,7 +2,9 @@ import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { IDockItem, IDockItemDimension, IMacWindow } from "@/interfaces";
 import Image from "next/image";
 import { dockItemDistance, maxDockItemSize, dockItemSize } from "@/../config";
-import { useWindowStore } from "@/store";
+import { useMacWindowStore, WindowStore } from "@/store/mac-window-store";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface DockItemProps {
   item: IDockItem;
@@ -19,10 +21,16 @@ export default function DockItem({ item, mousePosition }: DockItemProps) {
     undefined,
   );
 
-  const windows = useWindowStore((state) => state.windows);
-  const openWindow = useWindowStore((state) => state.openWindow);
-  const focusWindow = useWindowStore((state) => state.focusWindow);
-  const updateWindow = useWindowStore((state) => state.updateWindow);
+  const windows = useMacWindowStore((state: WindowStore) => state.windows);
+  const openWindow = useMacWindowStore(
+    (state: WindowStore) => state.openWindow,
+  );
+  const focusWindow = useMacWindowStore(
+    (state: WindowStore) => state.focusWindow,
+  );
+  const updateWindow = useMacWindowStore(
+    (state: WindowStore) => state.updateWindow,
+  );
 
   const handleResize = useCallback((): void => {
     const newDockItemRect = dockItemRef.current?.getBoundingClientRect();
@@ -97,10 +105,20 @@ export default function DockItem({ item, mousePosition }: DockItemProps) {
     }
   };
 
+  const url: string = useMemo(() => {
+    if (item.id === "rareboard") {
+      return "https://www.rareboard.com";
+    } else if (item.id === "styng") {
+      return "https://www.styng.com";
+    } else {
+      return "https://humxn.xyz";
+    }
+  }, [item.id]);
+
   return (
     <li
       ref={dockItemRef}
-      className={`relative flex items-center justify-center w-auto h-20 transition-transform duration-300 ease-out transform ${clicked ? "animate-bounce" : ""}`}
+      className={`relative flex items-center justify-center w-auto h-20 min-w-[20px] transition-transform duration-300 ease-out transform ${clicked ? "animate-bounce" : ""}`}
       style={dockItemStyle}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
@@ -113,15 +131,38 @@ export default function DockItem({ item, mousePosition }: DockItemProps) {
         {name}
       </div>
       {src && name && (
-        <Image
-          src={src}
-          alt={name}
-          width={dockItemStyle.width}
-          height={dockItemStyle.height}
-          placeholder="blur"
-          blurDataURL={src}
-          className="cursor-pointer"
-        />
+        <div
+          className={cn(
+            "",
+            item.id === "styng" ? "bg-gray-50 rounded-xl m-[7px]" : "",
+            item.id === "rareboard" ? "bg-gray-50 rounded-xl m-[7px] p-2" : "",
+            item.id === "humxn" ? "bg-gray-50 rounded-xl m-[7px] p-2" : "",
+          )}
+        >
+          {item.id === "rareboard" || item.id === "styng" ? (
+            <Link href={url} target={"_blank"} rel={"noreferrer"}>
+              <Image
+                src={src}
+                alt={name}
+                width={dockItemStyle.width}
+                height={dockItemStyle.height}
+                placeholder="blur"
+                blurDataURL={src}
+                className="cursor-pointer"
+              />
+            </Link>
+          ) : (
+            <Image
+              src={src}
+              alt={name}
+              width={dockItemStyle.width}
+              height={dockItemStyle.height}
+              placeholder="blur"
+              blurDataURL={src}
+              className="cursor-pointer"
+            />
+          )}
+        </div>
       )}
       {hasMacWindow?.id && (
         <span className="absolute bottom-0 w-[4px] h-[4px] bg-white bg-opacity-70 rounded-full"></span>

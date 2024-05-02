@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { NetworkStatusProvider } from "@/providers/NetworkStatusProvider";
+import { cookieToInitialState } from "wagmi";
+import { headers } from "next/headers";
+import Web3ModalProvider from "@/providers/Web3ModalProvider";
+import AuthProvider from "@/providers/AuthProvider";
+import { config } from "../../config";
+import React from "react";
 
 export const metadata: Metadata = {
-  title: "Welcome",
+  title: "Hi There",
   description: "Showcase",
+  robots: "noindex, nofollow",
 };
 
 export default function RootLayout({
@@ -12,10 +19,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const initialState = cookieToInitialState(config, headers().get("cookie"));
   return (
     // <NetworkStatusProvider>
-    <html lang="en">
-      <body suppressHydrationWarning={true}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning={false}>
+        <Web3ModalProvider initialState={initialState}>
+          <AuthProvider>
+            <div className="flex h-screen w-screen overflow-hidden">
+              <main className="w-full">{children}</main>
+            </div>
+          </AuthProvider>
+        </Web3ModalProvider>
+      </body>
     </html>
     // </NetworkStatusProvider>
   );

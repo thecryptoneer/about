@@ -1,4 +1,4 @@
-import {cn} from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 export default function ResizeFrame(props: any) {
   const handleMouseDown: any = props.handleMouseDown;
@@ -53,5 +53,5 @@ export default function ResizeFrame(props: any) {
         )}
       ></div>
     </>
-  )
+  );
 }

@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { useStore } from "@/store";
-import { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 export interface CredentialsInputProps {
   onSubmit: (step: any) => void;
@@ -13,7 +13,14 @@ export default function CredentialsInput({ onSubmit }: CredentialsInputProps) {
     setCredentialInput(e?.target?.value ?? "");
   };
 
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const inputRef: any = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (credentialInput === "" && inputRef?.current?.value) {
+      // reset input
+      inputRef.current.value = "";
+    }
+  }, [credentialInput, inputRef?.current?.value]);
 
   return (
     <div

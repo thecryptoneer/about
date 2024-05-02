@@ -1,32 +1,38 @@
-import {useWindowStore} from "@/store";
-import {FC, ReactNode, useEffect, useMemo, useRef, useState} from "react";
-import {cn} from "@/lib/utils";
-import {ICorner, IDelta, IDimension, IMacWindow, IPoint} from "@/interfaces";
+import { useMacWindowStore, WindowStore } from "@/store/mac-window-store";
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
+import { ICorner, IDelta, IDimension, IMacWindow, IPoint } from "@/interfaces";
 import ResizeFrame from "@/components/mac-window/resize-frame";
 import WindowActions from "@/components/mac-window/window-actions";
-import CV from "../cv";
 import useDoubleClick from "@/hooks/useDoubleClick";
-import {useWindowSize} from "usehooks-ts";
+import { useWindowSize } from "usehooks-ts";
+import CV from "@/components/cv";
+import Skills from "@/components/skills/skills";
 
-export default function MacWindow({
-                                    window: macWindow,
-                                  }: {
+interface MacWindowProps {
   window: IMacWindow;
-}) {
+}
+export default function MacWindow({ window: macWindow }: MacWindowProps) {
   const [isResizing, setIsResizing] = useState<boolean>(false);
   const [resizeDirection, setResizeDirection] = useState<string>("");
-  const [resizeStart, setResizeStart] = useState<IPoint>({x: 0, y: 0});
+  const [resizeStart, setResizeStart] = useState<IPoint>({ x: 0, y: 0 });
 
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [dragStart, setDragStart] = useState<IPoint>({x: 0, y: 0});
+  const [dragStart, setDragStart] = useState<IPoint>({ x: 0, y: 0 });
 
-  const focusedWindow = useWindowStore((state) => state.focusedWindow);
-  const focusWindow = useWindowStore((state) => state.focusWindow);
-  const closeWindow = useWindowStore((state) => state.closeWindow);
-  const screenWidth = useWindowStore((state) => state.screenWidth);
-  const screenHeight = useWindowStore((state) => state.screenHeight);
-  const updateWindow = useWindowStore((state) => state.updateWindow);
-  const windows = useWindowStore((state) => state.windows);
+  const closeWindow = useMacWindowStore(
+    (state: WindowStore) => state.closeWindow,
+  );
+  const screenWidth = useMacWindowStore(
+    (state: WindowStore) => state.screenWidth,
+  );
+  const screenHeight = useMacWindowStore(
+    (state: WindowStore) => state.screenHeight,
+  );
+  const updateWindow = useMacWindowStore(
+    (state: WindowStore) => state.updateWindow,
+  );
+  const windows = useMacWindowStore((state: WindowStore) => state.windows);
 
   const [corners, setCorners] = useState<ICorner>({
     top: macWindow.position.y,
@@ -34,7 +40,6 @@ export default function MacWindow({
     bottom: macWindow.position.y + macWindow.size.height,
     left: macWindow.position.x,
   });
-
   const [delta, setDelta] = useState<IDelta>({
     top: 0,
     right: 0,
@@ -43,7 +48,7 @@ export default function MacWindow({
   });
 
   const windowDimension: IDimension = useMemo(() => {
-    let dimension: IDimension = {width: 0, height: 0, top: 0, left: 0};
+    let dimension: IDimension = { width: 0, height: 0, top: 0, left: 0 };
     // width
     if (delta.left) {
       dimension.width = corners.right - corners.left - delta.left;
@@ -69,7 +74,7 @@ export default function MacWindow({
     dimension.left = corners.left + delta.left;
 
     return dimension;
-  }, [corners, delta])
+  }, [corners, delta]);
 
   const handleMouseDown = (e: any, type: string) => {
     if (type?.startsWith("resize")) {
@@ -78,7 +83,7 @@ export default function MacWindow({
       const x: number = e.clientX;
       const y: number = e.clientY;
       setIsResizing(true);
-      setResizeStart({x, y});
+      setResizeStart({ x, y });
     } else if (type === "drag") {
       setDelta({
         top: 0,
@@ -238,9 +243,9 @@ export default function MacWindow({
 
   const handleMenuClick = (type: string): void => {
     if (type === "close") {
-      closeWindow({...macWindow});
+      closeWindow({ ...macWindow });
     } else if (type === "minimize") {
-      updateWindow({...macWindow, isMinimized: true, isMaximized: false});
+      updateWindow({ ...macWindow, isMinimized: true, isMaximized: false });
     } else if (type === "maximize") {
       setCorners({
         top: 0,
@@ -270,25 +275,16 @@ export default function MacWindow({
     }
   };
 
-
   return (
     <WindowContainer macWindow={macWindow} windowDimension={windowDimension}>
       <WindowHeader handleMouseDown={handleMouseDown} macWindow={macWindow}>
-        <WindowActions handleMenuClick={handleMenuClick}/>
-        <WindowHeaderTitle title={macWindow.title}/>
+        <WindowActions handleMenuClick={handleMenuClick} />
+        <WindowHeaderTitle title={macWindow.title} />
       </WindowHeader>
 
-      <WindowContent macWindow={macWindow}>
-        {macWindow.id === 'cv' && (
-          <CV />
-        )}
+      <WindowContent macWindow={macWindow} />
 
-        {macWindow.id === 'skills' && (
-          <p className={"text-[12px] font-mono text-zinc-100"}>{macWindow.title}</p>
-        )}
-      </WindowContent>
-
-      <ResizeFrame handleMouseDown={handleMouseDown}/>
+      <ResizeFrame handleMouseDown={handleMouseDown} />
     </WindowContainer>
   );
 }
@@ -299,9 +295,17 @@ interface WindowContainerProps {
   windowDimension: IDimension;
 }
 
-const WindowContainer = ({children, macWindow, windowDimension}: WindowContainerProps) => {
-  const focusWindow = useWindowStore((state) => state.focusWindow);
-  const focusedWindow = useWindowStore((state) => state.focusedWindow);
+const WindowContainer = ({
+  children,
+  macWindow,
+  windowDimension,
+}: WindowContainerProps) => {
+  const focusWindow = useMacWindowStore(
+    (state: WindowStore) => state.focusWindow,
+  );
+  const focusedWindow = useMacWindowStore(
+    (state: WindowStore) => state.focusedWindow,
+  );
   return (
     <div
       className={cn(
@@ -319,44 +323,50 @@ const WindowContainer = ({children, macWindow, windowDimension}: WindowContainer
     >
       {children}
     </div>
-  )
-}
+  );
+};
 
 interface WindowContentProps {
-  children: ReactNode;
   macWindow: IMacWindow;
 }
-const WindowContent = ({children, macWindow}: WindowContentProps) => {
+const WindowContent = ({ macWindow }: WindowContentProps) => {
   return (
-    <div className={cn(
-      "p-2 bg-[#1e1e1e] px-4 py-4 rounded-b-[10px] border border-zinc-700 h-[calc(100%-58px)] overflow-y-auto",
-      // macWindow.isMaximized ? "rounded-[0px]" : "",
-    )}>
-      {children}
+    <div
+      className={cn(
+        "p-2 bg-[#1e1e1e] px-4 py-4 rounded-b-[10px] border border-zinc-700 h-[calc(100%-58px)] overflow-y-auto",
+        // macWindow.isMaximized ? "rounded-[0px]" : "",
+      )}
+    >
+      {macWindow.id === "cv" && <CV />}
+      {macWindow.id === "skills" && <Skills />}
     </div>
-  )
-}
-
+  );
+};
 
 interface WindowHeaderProps {
   children: ReactNode;
   handleMouseDown: any;
   macWindow: IMacWindow;
 }
-const WindowHeader = ({children, handleMouseDown, macWindow}: WindowHeaderProps) => {
-  const headerRef: any = useRef(null)
-  const updateWindow = useWindowStore((state) => state.updateWindow);
+const WindowHeader = ({
+  children,
+  handleMouseDown,
+  macWindow,
+}: WindowHeaderProps) => {
+  const headerRef: any = useRef(null);
+  const updateWindow = useMacWindowStore(
+    (state: WindowStore) => state.updateWindow,
+  );
   useDoubleClick({
     ref: headerRef,
-    latency: 180,
-    onSingleClick: () => console.log("Single click"),
+    latency: 250,
+    onSingleClick: () => null,
     onDoubleClick: () => handleDoubleClick(),
   });
 
   const size = useWindowSize();
 
   const handleDoubleClick = () => {
-    console.log("Double click", macWindow);
     updateWindow({
       ...macWindow,
       position: {
@@ -369,28 +379,29 @@ const WindowHeader = ({children, handleMouseDown, macWindow}: WindowHeaderProps)
       },
       isMaximized: true,
     });
-  }
+  };
   return (
-    <div ref={headerRef} onMouseDown={(e: any) => handleMouseDown(e, "drag")}
-         className={cn(
-           'flex items-center justify-between bg-[#372926] px-4 py-4 cursor-default rounded-t-[10px] border border-zinc-700 h-[58px]',
-           // macWindow.isMaximized ? "rounded-t-[0px]" : "",
-         )}>
+    <div
+      ref={headerRef}
+      onMouseDown={(e: any) => handleMouseDown(e, "drag")}
+      className={cn(
+        "flex items-center justify-between bg-[#372926] px-4 py-4 cursor-default rounded-t-[10px] border border-zinc-700 h-[58px]",
+        // macWindow.isMaximized ? "rounded-t-[0px]" : "",
+      )}
+    >
       {children}
     </div>
-  )
-}
+  );
+};
 
 interface WindowHeaderTitleProps {
   title: string;
 }
-const WindowHeaderTitle = ({title}: WindowHeaderTitleProps) => {
+const WindowHeaderTitle = ({ title }: WindowHeaderTitleProps) => {
   return (
     <>
-      <span className="flex-grow text-center font-semibold">
-        {title}
-      </span>
+      <span className="flex-grow text-center font-semibold">{title}</span>
       <span className="opacity-0 w-9"></span>
     </>
-  )
-}
+  );
+};

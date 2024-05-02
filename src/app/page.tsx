@@ -6,52 +6,45 @@ import { cn } from "@/lib/utils";
 import Header from "@/components/header";
 import Clock from "@/components/clock";
 import LoginAccount from "@/components/login-account";
-import { useDesktopStore, useStore, useWindowStore } from "@/store";
-import { wait } from "@/lib/utils";
+import { useStore } from "@/store";
+import { useMacWindowStore, WindowStore } from "@/store/mac-window-store";
+import { useDesktopStore } from "@/store/desktop-store";
 import Dock from "@/components/dock";
 import MacWindow from "@/components/mac-window";
 import DesktopItem from "../components/desktop-item";
-import { IDesktopItem, IMacWindow, IStep } from "@/interfaces";
+import { IDesktopItem, IMacWindow } from "@/interfaces";
+import { useWindowSize } from "usehooks-ts";
+import { isMobile, isTablet } from "react-device-detect";
 
 export default function Home() {
-  const steps: IStep[] = [
-    { value: "idle", label: "Idle", duration: 1000 },
-    { value: "loading", label: "Loading", duration: 1500 },
-    { value: "login", label: "Login", duration: -1 },
-  ];
   const step = useStore((state) => state.step);
-  const setStep = useStore((state) => state.setStep);
+  const setStepByValue = useStore((state) => state.setStepByValue);
   const [progress, setProgress] = useState<number>(0);
 
-  const windows: IMacWindow[] = useWindowStore((state) => state.windows);
-  const setScreenSize = useWindowStore((state) => state.setScreenSize);
+  const windows: IMacWindow[] = useMacWindowStore(
+    (state: WindowStore) => state.windows,
+  );
+  const setScreenSize = useMacWindowStore(
+    (state: WindowStore) => state.setScreenSize,
+  );
 
   const desktopItems: IDesktopItem[] = useDesktopStore(
     (state) => state.desktopItems,
   );
 
-  const runSequence = async () => {
-    for (const currentStep of steps) {
-      setStep(currentStep);
-      await wait(currentStep.duration);
-    }
-  };
-
-  // update screen size on resize
   useEffect(() => {
-    const handleResize = () =>
-      setScreenSize(window.innerWidth, window.innerHeight);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    setStepByValue("idle");
   }, []);
 
+  // add screen size to zustand store to access it outside of components
+  const screenSize: { width: number; height: number } = useWindowSize();
   useEffect(() => {
-    setScreenSize(window?.innerWidth, window.innerHeight);
-    runSequence();
-  }, []);
+    setScreenSize(screenSize.width, screenSize.height);
+  }, [screenSize]);
 
+  // handle loading progress animation
   useEffect(() => {
-    if (step.value !== "loading") {
+    if (step?.value !== "loading") {
       setProgress(0); // Reset progress when not loading
       return;
     }
@@ -69,12 +62,23 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [step]);
 
-  const isVisible = (values: string[]) => values.includes(step.value);
+  const isVisible = (values: string[]): boolean => {
+    if (!step?.value) return false;
+    return values.includes(step.value);
+  };
+
+  const isTouchDevice = () => {
+    return isTablet || isMobile;
+  };
+
+  if (isTouchDevice()) {
+    return <div>mobile</div>;
+  }
 
   return (
     <main
       className={cn(
-        "flex min-h-screen flex-col",
+        "flex min-h-screen flex-col overflow-hidden",
         isVisible(["login", "success", "loggingIn"])
           ? "bg-background bg-no-repeat bg-cover"
           : "",

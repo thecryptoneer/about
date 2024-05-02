@@ -1,9 +1,11 @@
 import { cn } from "@/lib/utils";
 import Clock from "@/components/clock";
-import { useStore, useWindowStore } from "@/store";
+import { useStore } from "@/store";
+import { useMacWindowStore, WindowStore } from "@/store/mac-window-store";
 import Image from "next/image";
 import { leftItems, rightItems } from "@/components/header/items";
 import { IStep } from "@/interfaces";
+import { isMobile } from "react-device-detect";
 
 export interface HeaderProps {
   background?: boolean;
@@ -13,7 +15,9 @@ export interface HeaderProps {
 export default function Header({ background }: HeaderProps) {
   // const connectionSpeed = useStore(state => state.connectionSpeed);
   const step = useStore((state) => state.step);
-  const focusedWindow = useWindowStore((state) => state.focusedWindow);
+  const focusedWindow = useMacWindowStore(
+    (state: WindowStore) => state.focusedWindow,
+  );
   const isVisible = (values: string[]): boolean => values.includes(step.value);
 
   return (
@@ -40,11 +44,18 @@ export default function Header({ background }: HeaderProps) {
             <p className={cn("text-[13px]")}>
               {focusedWindow?.title ?? "Finder"}
             </p>
-            {leftItems.map((item, index) => (
-              <p key={item} className={cn("text-[13px]")}>
-                {item}
-              </p>
-            ))}
+
+            <div
+              className={
+                "hidden lg:flex flex flex-row justify-start items-center gap-6 cursor-default"
+              }
+            >
+              {leftItems.map((item, index) => (
+                <p key={item} className={cn("text-[13px]")}>
+                  {item}
+                </p>
+              ))}
+            </div>
           </>
         )}
       </div>
@@ -54,14 +65,17 @@ export default function Header({ background }: HeaderProps) {
       <div className={cn("flex gap-4 items-center")}>
         {isVisible(["success"]) && (
           <div className={cn("flex gap-5 items-center")}>
-            {rightItems.map((item, index) => (
-              <div
-                key={item.id}
-                className={cn("object-fit min-w-[16px] items-center")}
-              >
-                {item.icon}
-              </div>
-            ))}
+            {!isMobile &&
+              rightItems.map((item, index) => (
+                <div
+                  key={item.id}
+                  className={cn(
+                    "object-fit min-w-[16px] items-center hidden md:block",
+                  )}
+                >
+                  {item.icon}
+                </div>
+              ))}
             {/*<p className={cn('text-[13px]')}>{connectionSpeed}</p>*/}
             <Clock variant={"header"} />
           </div>

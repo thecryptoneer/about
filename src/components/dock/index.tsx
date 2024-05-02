@@ -18,14 +18,15 @@ export default function Dock() {
     [setMousePosition],
   );
 
-  const throttleSetMousePosition: any = (position: { x: number; y: number }) => throttle(setMousePosition(position), 1000);
+  const throttleSetMousePosition: any = (position: { x: number; y: number }) =>
+    throttle(setMousePosition(position), 1000);
 
   return (
     <nav
       className={cn(
-        "w-auto h-20 flex justify-center hidden md:flex",
+        "w-[90vw] md:w-auto h-20 flex justify-center overflow-auto no-scrollbar",
         "absolute bottom-5 left-1/2 transform -translate-x-1/2",
-        "rounded-[14px] shadow-md bg-opacity-25 bg-gray-700 backdrop-blur-lg border border-white border-opacity-20",
+        "rounded-full md:rounded-[14px] shadow-md bg-opacity-25 bg-gray-700 backdrop-blur-lg border border-white border-opacity-20",
       )}
       onMouseMove={handleMouseMove}
       onMouseLeave={() => throttleSetMousePosition({ x: 0, y: 0 })}

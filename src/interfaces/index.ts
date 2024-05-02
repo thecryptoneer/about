@@ -1,3 +1,5 @@
+import React from "react";
+
 export interface IDockItem {
   name: string;
   src: string;
@@ -65,8 +67,65 @@ export type StepValue =
   | "success"
   | "error"
   | "loggingIn";
+
 export interface IStep {
   value: StepValue;
   label: string;
   duration: number;
+}
+
+export interface ChildrenAndClassName {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export interface IJobItem {
+  role: string;
+  company: string;
+  duration: string;
+  description: string;
+  list: string[];
+}
+
+export interface IJobSection {
+  name: string;
+  items: IJobItem[];
+}
+
+export interface AuthToken {
+  exp: number;
+  data: {
+    userId: string;
+    messageId: string;
+    address: string;
+  };
+  iat: number;
+}
+
+export interface User {
+  address: string;
+}
+
+export interface UserWithId extends User {
+  _id: number;
+}
+
+import { ObjectId } from "bson";
+
+export interface Message {
+  address: string;
+  message: string;
+  timestamp: number;
+  uId: string;
+  signature?: string;
+}
+
+export interface MessageWithId extends Message {
+  _id: ObjectId;
+}
+
+export interface APIResponse {
+  result: any;
+  error: any;
+  endpoint: string;
 }
