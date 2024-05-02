@@ -6,11 +6,6 @@ import { APIResponse } from "@/interfaces";
 import { demoUserId, resumeId } from "../../../../../config";
 import { ObjectId } from "bson";
 
-const client = await clientPromise;
-const db = client.db("restricted");
-const dbUser = db.collection("user");
-const dbResume = db.collection("resume");
-
 export async function POST(request: NextRequest) {
   const responseData: APIResponse = {
     endpoint: "POST /api/auth/signin",
@@ -31,6 +26,10 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    const client = await clientPromise;
+    const db = client.db("restricted");
+    const dbUser = db.collection("user");
+    const dbResume = db.collection("resume");
     const user = await dbUser.findOne({ _id: new ObjectId(demoUserId) });
     if (!user) {
       responseData.error = "User not found";
