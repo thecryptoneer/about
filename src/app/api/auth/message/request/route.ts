@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
   }
 
   const client = await clientPromise;
-  const db = client.db("tax3000");
+  const db = client.db("restricted");
   const dbMessages = db.collection("messages");
   const dbUsers = db.collection("users");
   // check if user exists for address
