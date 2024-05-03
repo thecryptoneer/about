@@ -30,17 +30,6 @@
   scrollbar-width: none;
 }
 
-body {
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-}
-@supports (-webkit-touch-callout: none) {
-  body {
-    height: -webkit-fill-available;
-  }
-}
-
 @tailwind components;
 @tailwind utilities;
 
