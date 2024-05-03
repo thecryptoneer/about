@@ -6,6 +6,7 @@ import { isValidAddress } from "@ethereumjs/util";
 import jwt from "jsonwebtoken";
 import { APIResponse } from "@/interfaces";
 import { baseHeaders } from "../../../../../../config/api";
+const client = await clientPromise;
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -40,7 +41,6 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const client = await clientPromise;
   const db = client.db("restricted");
   const dbMessages = db.collection("messages");
   const dbUsers = db.collection("users");

@@ -5,6 +5,7 @@ import { safeVerifyMessage } from "@/lib/utils";
 import { isValidAddress } from "@ethereumjs/util";
 import jwt from "jsonwebtoken";
 import { APIResponse } from "@/interfaces";
+const client = await clientPromise;
 
 export async function GET(request: NextRequest) {
   const responseData: APIResponse = {
@@ -36,7 +37,6 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  const client = await clientPromise;
   const db = client.db("restricted");
   const dbMessages = db.collection("messages");
   const dbUsers = db.collection("users");

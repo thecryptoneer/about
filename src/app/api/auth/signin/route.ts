@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { APIResponse } from "@/interfaces";
 import { demoUserId, resumeId } from "../../../../../config";
 import { ObjectId } from "bson";
+const client = await clientPromise;
 
 export async function POST(request: NextRequest) {
   const responseData: APIResponse = {
@@ -26,7 +27,6 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const client = await clientPromise;
     const db = client.db("restricted");
     const dbUser = db.collection("user");
     const dbResume = db.collection("resume");
