@@ -29,7 +29,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   // debounced authentication check
   useEffect(() => {
     if (address && checks > 0) {
-      checkAuthDebounced(address as unknown as any);
+      // checkAuthDebounced(address as unknown as any);
     }
     setAddress(address);
   }, [address, status, checks]);

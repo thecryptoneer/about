@@ -74,7 +74,7 @@ export default function Home() {
   return (
     <main
       className={cn(
-        "flex min-h-[100dvh] flex-col overflow-hidden",
+        "flex min-h-[100dvh] flex-col",
         isVisible(["login", "success", "loggingIn"])
           ? "bg-background bg-no-repeat bg-cover"
           : "",
