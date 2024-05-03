@@ -5,6 +5,9 @@ import React, { useEffect, useRef } from "react";
 export interface CredentialsInputProps {
   onSubmit: (step: any) => void;
 }
+
+
+
 export default function CredentialsInput({ onSubmit }: CredentialsInputProps) {
   const setCredentialInput = useStore((state) => state.setCredentialInput);
   const credentialInput = useStore((state) => state.credentialInput);
@@ -33,6 +36,7 @@ export default function CredentialsInput({ onSubmit }: CredentialsInputProps) {
         onChange={handlePwChange}
         id="pwInput"
         type="password"
+        autoComplete={"off"}
         ref={inputRef}
         placeholder={"Passwort eingeben"}
         className={cn(

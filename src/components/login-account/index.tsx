@@ -5,6 +5,7 @@ import CredentialsInput from "@/components/credentials-input";
 import { useEffect, useState } from "react";
 import { PUBLIC_API_ROUTES } from "../../../config/api";
 import LoadingSpinner from "@/components/loading-spinner";
+import {LoginForm} from "@/components/forms/login-form";
 
 export default function LoginAccount() {
   const setStepByValue = useStore((state) => state.setStepByValue);
@@ -72,7 +73,8 @@ export default function LoginAccount() {
         {error ? <p className="text-red-500">{error}</p> : <LoadingSpinner />}
       </div>
       <div className={cn(isVisible(["login"]) ? "block" : "hidden")}>
-        <CredentialsInput onSubmit={onSubmit} />
+        <LoginForm onSubmit={onSubmit} />
+        {/*<CredentialsInput onSubmit={onSubmit} />*/}
       </div>
     </div>
   );
