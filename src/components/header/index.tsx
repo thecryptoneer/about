@@ -22,6 +22,8 @@ export default function Header({ background }: HeaderProps) {
   );
   const isVisible = (values: string[]): boolean => values.includes(step.value);
 
+  if (isMobile) return
+
   return (
     <div
       className={cn(
