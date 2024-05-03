@@ -26,7 +26,7 @@ export default function RootLayout({
       <body suppressHydrationWarning={false}>
         <Web3ModalProvider initialState={initialState}>
           <AuthProvider>
-            <div className="flex h-screen w-screen overflow-hidden">
+            <div className="flex h-[100dvh] w-screen overflow-hidden">
               <main className="w-full">{children}</main>
             </div>
           </AuthProvider>

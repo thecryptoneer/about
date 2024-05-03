@@ -74,7 +74,7 @@ export default function Home() {
   return (
     <main
       className={cn(
-        "flex min-h-screen flex-col overflow-hidden",
+        "flex min-h-[100dvh] flex-col overflow-hidden",
         isVisible(["login", "success", "loggingIn"])
           ? "bg-background bg-no-repeat bg-cover"
           : "",
@@ -89,7 +89,7 @@ export default function Home() {
       {isVisible(["idle", "loading"]) && (
         <div
           className={cn(
-            "w-full flex flex-col justify-center items-center h-screen",
+            "w-full flex flex-col justify-center items-center h-[100dvh]",
           )}
         >
           <Logo width={70} />
@@ -101,7 +101,7 @@ export default function Home() {
       {isVisible(["login", "loggingIn"]) && (
         <div
           className={cn(
-            "flex flex-col justify-between items-center h-screenWithoutHeader pt-16 pb-32",
+            "flex flex-col justify-between items-center h-[100dvh]WithoutHeader pt-16 pb-32",
           )}
         >
           <Clock variant={"login"} />
