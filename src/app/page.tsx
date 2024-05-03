@@ -101,7 +101,7 @@ export default function Home() {
       {isVisible(["login", "loggingIn"]) && (
         <div
           className={cn(
-            "flex flex-col justify-between items-center h-[100dvh]WithoutHeader pt-16 pb-32",
+            "flex flex-col justify-between items-center h-screenWithoutHeader pt-16 pb-32",
           )}
         >
           <Clock variant={"login"} />
