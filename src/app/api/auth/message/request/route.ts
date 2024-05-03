@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import clientPromise from "../../../../../lib/mongodb";
+import clientPromise from "../../../../../../database/mongodb";
 import { ObjectId } from "bson";
 import { safeVerifyMessage } from "@/lib/utils";
 import { isValidAddress } from "@ethereumjs/util";
