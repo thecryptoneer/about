@@ -35,6 +35,7 @@
     "react": "^18",
     "react-device-detect": "^2.2.3",
     "react-dom": "^18",
+    "react-full-screen": "^1.1.1",
     "react-hook-form": "^7.47.0",
     "recharts": "^2.12.6",
     "sass": "^1.76.0",

@@ -15,8 +15,11 @@ import DesktopItem from "../components/desktop-item";
 import { IDesktopItem, IMacWindow } from "@/interfaces";
 import { useWindowSize } from "usehooks-ts";
 import { isMobile, isTablet } from "react-device-detect";
+import {FullScreen, FullScreenHandle, useFullScreenHandle} from "react-full-screen";
 
 export default function Home() {
+  const handle: FullScreenHandle = useFullScreenHandle();
+
   const step = useStore((state) => state.step);
   const setStepByValue = useStore((state) => state.setStepByValue);
   const [progress, setProgress] = useState<number>(0);
@@ -34,6 +37,7 @@ export default function Home() {
 
   useEffect(() => {
     setStepByValue("idle");
+    handle.enter();
   }, []);
 
   // add screen size to zustand store to access it outside of components
@@ -72,57 +76,65 @@ export default function Home() {
   };
 
   return (
-    <main
-      className={cn(
-        "flex min-h-[100dvh] flex-col",
-        isVisible(["login", "success", "loggingIn"])
-          ? "bg-background bg-no-repeat bg-cover"
-          : "",
-      )}
-    >
-      {/* header */}
-      {isVisible(["login", "success"]) && (
-        <Header background={isVisible(["success"])} />
-      )}
-
-      {/* idle / loading screen */}
-      {isVisible(["idle", "loading"]) && (
-        <div
+    <>
+      <FullScreen handle={handle}>
+        <main
           className={cn(
-            "w-full flex flex-col justify-center items-center h-[100dvh]",
+            "flex min-h-[100dvh] flex-col",
+            isVisible(["login", "success", "loggingIn"])
+              ? "bg-background bg-no-repeat bg-cover"
+              : "",
           )}
         >
-          <Logo width={70} />
-          <LoadingBar hidden={!isVisible(["loading"])} progress={progress} />
-        </div>
-      )}
-
-      {/* login screen */}
-      {isVisible(["login", "loggingIn"]) && (
-        <div
-          className={cn(
-            "flex flex-col justify-between items-center h-screenWithoutHeader pt-16 pb-32",
+          {/* header */}
+          {isVisible(["login", "success"]) && (
+            <Header background={isVisible(["success"])} />
           )}
-        >
-          <Clock variant={"login"} />
-          <LoginAccount />
-        </div>
-      )}
 
-      {/* windows and desktop-item */}
-      {isVisible(["success"]) && (
-        <div className={cn("relative h-screenWithoutHeader")}>
-          {windows
-            ?.filter((w) => !w.isMinimized)
-            ?.map((window) => <MacWindow key={window.id} window={window} />)}
+          {/* idle / loading screen */}
+          {isVisible(["idle", "loading"]) && (
+            <div
+              className={cn(
+                "w-full flex flex-col justify-center items-center h-[100dvh]",
+              )}
+            >
+              <Logo width={70} />
+              <LoadingBar hidden={!isVisible(["loading"])} progress={progress} />
+            </div>
+          )}
 
-          {desktopItems.map((item, index) => (
-            <DesktopItem key={item.id} item={item} />
-          ))}
+          {/* login screen */}
+          {isVisible(["login", "loggingIn"]) && (
+            <div
+              className={cn(
+                "flex flex-col justify-between items-center h-screenWithoutHeader pt-16 pb-32",
+              )}
+            >
+              <Clock variant={"login"} />
+              <LoginAccount />
+            </div>
+          )}
 
-          <Dock />
-        </div>
-      )}
-    </main>
+          {/* windows and desktop-item */}
+          {isVisible(["success"]) && (
+            <div className={cn("relative h-screenWithoutHeader")}>
+              {windows
+              ?.filter((w) => !w.isMinimized)
+              ?.map((window) => <MacWindow key={window.id} window={window} />)}
+
+              {desktopItems.map((item, index) => (
+                <DesktopItem key={item.id} item={item} />
+              ))}
+
+              <Dock />
+            </div>
+          )}
+        </main>
+      </FullScreen>
+
+      <button onClick={handle.enter}>
+        Enter fullscreen
+      </button>
+    </>
   );
 }
