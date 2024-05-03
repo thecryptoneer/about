@@ -74,7 +74,7 @@ export default function Home() {
   return (
       <div
         className={cn(
-          "flex h-[100dvh] w-[100dvw] flex-col",
+          "flex h-[100dvh] w-[100dvw] flex-col overflow-y-auto",
           isVisible(["login", "success", "loggingIn"])
             ? "bg-background bg-no-repeat bg-cover"
             : "",

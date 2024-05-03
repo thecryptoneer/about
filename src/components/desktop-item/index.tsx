@@ -192,7 +192,6 @@ export default function DesktopItem({ item: desktopItem }: DesktopItemProps) {
         left: x,
       });
     }
-
   }
 
   useEffect(() => {
@@ -296,11 +295,14 @@ export default function DesktopItem({ item: desktopItem }: DesktopItemProps) {
 
   useEffect(() => {
     if (isDragging) {
+      // set body overflow to hidden
+      document.body.style.overflow = "hidden";
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
       document.addEventListener("touchmove", handleTouchMove);
       document.addEventListener("touchend", handleMouseUp);
     } else {
+      document.body.style.overflow = "unset";
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
       document.removeEventListener("touchmove", handleTouchMove);
@@ -308,6 +310,7 @@ export default function DesktopItem({ item: desktopItem }: DesktopItemProps) {
     }
 
     return () => {
+      document.body.style.overflow = "hidden";
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
       document.removeEventListener("touchmove", handleTouchMove);
