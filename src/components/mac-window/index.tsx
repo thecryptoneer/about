@@ -227,6 +227,7 @@ export default function MacWindow({ window: macWindow }: MacWindowProps) {
     if (isDragging) {
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
+      document.addEventListener("touchmove", handleMouseMove);
     } else if (isResizing) {
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);

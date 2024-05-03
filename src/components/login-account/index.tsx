@@ -1,7 +1,6 @@
 import { useStore } from "@/store";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import CredentialsInput from "@/components/credentials-input";
 import { useEffect, useState } from "react";
 import { PUBLIC_API_ROUTES } from "../../../config/api";
 import LoadingSpinner from "@/components/loading-spinner";
@@ -74,7 +73,6 @@ export default function LoginAccount() {
       </div>
       <div className={cn(isVisible(["login"]) ? "block" : "hidden")}>
         <LoginForm onSubmit={onSubmit} />
-        {/*<CredentialsInput onSubmit={onSubmit} />*/}
       </div>
     </div>
   );

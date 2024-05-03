@@ -1,16 +1,16 @@
 import { useMacWindowStore, WindowStore } from "@/store/mac-window-store";
 import {
   DesktopStore,
-  DesktopStoreState,
   useDesktopStore,
 } from "@/store/desktop-store";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { FolderIcon, TextIcon } from "@/components/icons";
+import {FolderIcon, DraggableGenericIcon} from "@/components/icons";
 import { ICorner, IDelta, IDesktopItem, IMacWindow } from "@/interfaces";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 import useDoubleClick from "@/hooks/useDoubleClick";
 import { useWindowSize } from "usehooks-ts";
+import {isMobile} from "react-device-detect";
 
 export interface DesktopItemProps {
   item: IDesktopItem;
@@ -80,6 +80,22 @@ export default function DesktopItem({ item: desktopItem }: DesktopItemProps) {
     }
   };
 
+  const handleTouchStart = (e: any, type: string) => {
+    if (type === "drag") {
+      setDelta({
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+      });
+      setIsDragging(true);
+      setDragStart({
+        x: e.touches[0].clientX - desktopItem.position.x,
+        y: e.touches[0].clientY - desktopItem.position.y,
+      });
+    }
+  }
+
   const itemWidth: number = useMemo(() => {
     if (delta.left) {
       return corners.right - corners.left - delta.left;
@@ -143,6 +159,42 @@ export default function DesktopItem({ item: desktopItem }: DesktopItemProps) {
     }
   };
 
+  const handleTouchMove = (e: any) => {
+    if (!isFocused) {
+      setIsFocused(true);
+    }
+    if (isDragging) {
+      let x: number = e.touches[0].clientX - dragStart.x;
+      let y: number = e.touches[0].clientY - dragStart.y;
+
+      const thresholdX = 0;
+      const thresholdY = 52;
+
+      // make sure window can only be dragged within view
+      if (x < 0) {
+        x = 0;
+      }
+      if (y < 0) {
+        y = 0;
+      }
+      if (x + itemWidth + thresholdX > screenWidth) {
+        x = screenWidth - itemWidth - thresholdX;
+      }
+      if (y + itemHeight + thresholdY > screenHeight) {
+        y = screenHeight - itemHeight - thresholdY;
+      }
+
+      setCorners({
+        ...corners,
+        top: y,
+        right: x + itemWidth,
+        bottom: y + itemHeight,
+        left: x,
+      });
+    }
+
+  }
+
   useEffect(() => {
     setDelta({
       top: 0,
@@ -182,19 +234,58 @@ export default function DesktopItem({ item: desktopItem }: DesktopItemProps) {
   const size = useWindowSize();
 
   const handleDoubleClick = () => {
+    // check if in window // else move into window
     const new_window: IMacWindow = {
-      position: { x: windows.length * 50, y: windows.length * 50 },
-      size: { width: size.width * 0.6, height: size.height * 0.5 },
+      position: isMobile ? {x: 0, y:0} : { x: windows.length * 50, y: windows.length * 50 },
+      size: isMobile ? {width: size.width, height: size.height} : { width: size.width * 0.6, height: size.height * 0.5 },
       title: desktopItem.name,
       id: desktopItem.id,
-      isMaximized: false,
+      isMaximized: isMobile,
       isMinimized: false,
     };
     // check if exists in windows and
     const hasOpenWindow = windows?.find((w) => w.id === new_window.id);
+    let updatedWindow: {
+      position: { x: number; y: number };
+      size: { width: number; height: number };
+    } = {position: {x: 0, y: 0}, size: {width: 0, height: 0}};
     if (hasOpenWindow?.id) {
       if (hasOpenWindow.isMinimized) {
-        updateWindow({ ...hasOpenWindow, isMinimized: false });
+        const boundaries = {
+          top: hasOpenWindow.position.y,
+          right: hasOpenWindow.position.x + hasOpenWindow.size.width,
+          bottom: hasOpenWindow.position.y + hasOpenWindow.size.height,
+          left: hasOpenWindow.position.x,
+        }
+        if (boundaries.right > screenWidth) {
+          hasOpenWindow.position.x = screenWidth - hasOpenWindow.size.width;
+          if (hasOpenWindow.position.x < 0) {
+            updatedWindow.position.x = 0;
+          }
+        }
+
+        if (boundaries.bottom > screenHeight) {
+          hasOpenWindow.position.y = screenHeight - hasOpenWindow.size.height;
+          if (hasOpenWindow.position.y < 0) {
+            updatedWindow.position.y = 0;
+          }
+        }
+
+        // set Fullscreen
+        if (isMobile) {
+          updatedWindow = {
+            position: {x: 0, y: 0},
+            size: {width: size.width, height: size.height},
+          }
+        }
+
+        updateWindow({
+          ...hasOpenWindow,
+          position: updatedWindow.position,
+          size: updatedWindow.size,
+          isMaximized: isMobile,
+          isMinimized: false
+        });
       } else {
         focusWindow(hasOpenWindow);
       }
@@ -207,14 +298,20 @@ export default function DesktopItem({ item: desktopItem }: DesktopItemProps) {
     if (isDragging) {
       document.addEventListener("mousemove", handleMouseMove);
       document.addEventListener("mouseup", handleMouseUp);
+      document.addEventListener("touchmove", handleTouchMove);
+      document.addEventListener("touchend", handleMouseUp);
     } else {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("touchend", handleMouseUp);
     }
 
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("touchend", handleMouseUp);
     };
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
@@ -231,6 +328,7 @@ export default function DesktopItem({ item: desktopItem }: DesktopItemProps) {
     >
       <div
         onMouseDown={(e: any) => handleMouseDown(e, "drag")}
+        onTouchStart={(e: any) => handleTouchStart(e, "drag")}
         className={cn("flex flex-col items-center justify center gap-[3px]")}
       >
         <div
@@ -240,7 +338,8 @@ export default function DesktopItem({ item: desktopItem }: DesktopItemProps) {
               : "",
           )}
         >
-          {desktopItem.id === "cv" ? <TextIcon /> : <FolderIcon />}
+          {desktopItem.image && <DraggableGenericIcon src={desktopItem.image} width={60} height={60}/>}
+          {!desktopItem.image && <FolderIcon />}
         </div>
         <p
           className={cn(

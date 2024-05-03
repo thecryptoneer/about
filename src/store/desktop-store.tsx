@@ -22,7 +22,7 @@ export const initialItems = [
   {
     position: { x: 40, y: 140 },
     size: { width: 80, height: 80 },
-    name: "CV",
+    name: "About me",
     image: "/assets/text-icon.png",
     id: "About me",
   },
@@ -30,7 +30,7 @@ export const initialItems = [
     position: { x: 40, y: 240 },
     size: { width: 80, height: 80 },
     name: "Skills",
-    image: "/assets/filter-code2.png",
+    image: "/assets/folder-code2-icon.png",
     id: "skills",
   },
 ];

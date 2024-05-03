@@ -139,7 +139,7 @@ export default function DockItem({ item, mousePosition }: DockItemProps) {
             item.id === "humxn" ? "bg-gray-50 rounded-xl m-[7px] p-2" : "",
           )}
         >
-          {item.id === "rareboard" || item.id === "styng" ? (
+          {item.id === "rareboard" || item.id === "styng" || item.id === "humxn" ? (
             <Link href={url} target={"_blank"} rel={"noreferrer"}>
               <Image
                 src={src}

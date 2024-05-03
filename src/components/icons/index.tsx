@@ -112,6 +112,17 @@ export function BatteryIcon() {
   );
 }
 
+export interface GenericIconProps {
+  src: string;
+  width: number;
+  height: number;
+}
+export function DraggableGenericIcon({src, width, height}: GenericIconProps) {
+  return (
+    <div style={{backgroundImage: `url('${src}')`, width, height}} className={"bg-center bg-no-repeat bg-contain"}></div>
+  )
+}
+
 export function ControlIcon() {
   return (
     <Image

@@ -21,6 +21,7 @@ export interface IDesktopItem {
   size: { width: number; height: number };
   name: string;
   id: string;
+  image?: string;
 }
 
 export interface IPoint {

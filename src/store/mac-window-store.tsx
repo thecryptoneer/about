@@ -23,7 +23,7 @@ export interface WindowStoreActions {
 export type WindowStore = WindowStoreState & WindowStoreActions;
 
 export const useMacWindowStore = create<WindowStore>()(
-  persist(
+  // persist(
     (set) => {
       return {
         screenWidth: 0,
@@ -85,6 +85,6 @@ export const useMacWindowStore = create<WindowStore>()(
         reset: () => set({}),
       };
     },
-    { name: "mac-window-store" },
-  ),
+    // { name: "mac-window-store" },
+  // ),
 );

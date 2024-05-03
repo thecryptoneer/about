@@ -1,3 +1,4 @@
+"use client";
 import { cn } from "@/lib/utils";
 import Clock from "@/components/clock";
 import { useStore } from "@/store";
@@ -15,6 +16,7 @@ export interface HeaderProps {
 export default function Header({ background }: HeaderProps) {
   // const connectionSpeed = useStore(state => state.connectionSpeed);
   const step = useStore((state) => state.step);
+  const setStepByValue = useStore((state) => state.setStepByValue);
   const focusedWindow = useMacWindowStore(
     (state: WindowStore) => state.focusedWindow,
   );
@@ -35,6 +37,7 @@ export default function Header({ background }: HeaderProps) {
         {isVisible(["success"]) && (
           <>
             <Image
+              onClick={() => setStepByValue('login')}
               className={"translate-y-[-2px]"}
               src={"/assets/apple_logo_black.svg"}
               width={13}
