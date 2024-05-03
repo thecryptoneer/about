@@ -74,7 +74,7 @@ export default function Home() {
   return (
       <div
         className={cn(
-          "flex h-[100dvh] w-[100dvw] flex-col overflow-y-auto",
+          "flex flex-col h-full w-full",
           isVisible(["login", "success", "loggingIn"])
             ? "bg-background bg-no-repeat bg-cover"
             : "",
@@ -89,7 +89,7 @@ export default function Home() {
         {isVisible(["idle", "loading"]) && (
           <div
             className={cn(
-              "w-full flex flex-col justify-center items-center h-[100dvh]",
+              "w-full flex flex-col justify-center items-center h-full",
             )}
           >
             <Logo width={70} />
@@ -101,7 +101,7 @@ export default function Home() {
         {isVisible(["login", "loggingIn"]) && (
           <div
             className={cn(
-              "flex flex-col justify-between items-center overflow-y-auto h-full md:h-screenWithoutHeader pt-16 pb-32",
+              "flex flex-col justify-between items-center h-full md:h-screenWithoutHeader pt-16 pb-32",
             )}
           >
             <Clock variant={"login"} />
@@ -111,7 +111,7 @@ export default function Home() {
 
         {/* windows and desktop-item */}
         {isVisible(["success"]) && (
-          <div className={cn("relative overflow-y-auto h-full md:h-screenWithoutHeader")}>
+          <div className={cn("relative h-full md:h-screenWithoutHeader")}>
             {windows
             ?.filter((w) => !w.isMinimized)
             ?.map((window) => <MacWindow key={window.id} window={window} />)}

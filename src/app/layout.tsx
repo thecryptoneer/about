@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     // <NetworkStatusProvider>
     <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning={false}>
+      <body suppressHydrationWarning={false} className={"h-[100dvh] w-[100dvw] overflow-y-auto"}>
         <Web3ModalProvider initialState={initialState}>
           <AuthProvider>
              {children}
